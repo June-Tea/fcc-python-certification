@@ -1,0 +1,91 @@
+import math
+
+class Category:
+    def __init__(self, name):
+        self.name = name
+        self.ledger = []
+        self.total_spent = 0
+    def deposit(self, amount, description =''):
+        self.ledger.append({'amount': amount, 'description': description})
+    def withdraw(self, amount, description =''):
+        if self.check_funds(amount):
+            self.ledger.append({'amount': amount * -1, 'description': description})
+            self.total_spent += amount
+            return True
+        else:
+            return False
+
+    def get_balance(self):
+        balance = 0
+        for dic in self.ledger:
+            balance += dic['amount']
+        return balance
+    
+    def transfer(self, amount, destination):
+        if self.check_funds(amount):
+            self.withdraw(amount, f'Transfer to {destination.name}')
+            destination.deposit(amount, f'Transfer from {self.name}')
+            return True
+        else:
+            return False
+    def __str__(self):
+        string = f'{self.name:*^30}'
+        for dic in self.ledger:
+            string += f'\n{dic["description"][:23]:<23}{dic["amount"]:7.2f}'
+        string += f'\nTotal: {self.get_balance()}'
+        return string
+    
+    def check_funds(self, amount):
+        return amount <= self.get_balance()
+
+
+def create_spend_chart(categories):
+    cat_count = len(categories)
+    longest_cat = 0
+    string = 'Percentage spent by category\n'
+    amounts = []
+    total_amount = 0
+    percentages = []
+    for cat in categories:
+        amount = cat.total_spent
+        length = len(cat.name)
+        amounts.append(amount)
+        total_amount += amount
+        if length > longest_cat:
+            longest_cat = length
+    for amount in amounts:
+        percent = math.floor((amount/total_amount)*10) *10
+        percentages.append(percent)
+    for i in range(100, -10, -10):
+        string += f'{i:>3}|'
+        for percent in percentages:
+            string += ' o ' if percent >= i else '   '
+        string += ' \n'
+    
+    string += '    ' + '-'*(cat_count *3 + 1)
+
+    for i in range(longest_cat):
+        string += '\n    '
+        for cat in categories:
+            string += f' {cat.name[i]} ' if i < len(cat.name) else '   '
+        string += ' '
+
+    return string
+def main():
+    food = Category('Food')
+    food.deposit(1000, 'initial deposit')
+    food.withdraw(10.15, 'groceries')
+    food.withdraw(15.89, 'restaurant and more food for dessert')
+    clothing = Category('Clothing')
+    food.transfer(50, clothing)
+    print(food)
+    clothing.withdraw(20, 'T-Shirt')
+    print(clothing)
+    rent = Category('Rent')
+    rent.deposit(100)
+    rent.withdraw(100)
+    categories = [food,clothing,rent]
+    print('\n'+create_spend_chart(categories))
+if __name__ == '__main__':
+    main()
+    

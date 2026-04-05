@@ -1,0 +1,44 @@
+class HashTable:
+    def __init__(self)-> None:
+        self.collection = {}
+
+    def hash(self, key: str)-> str:
+        return sum([ord(char) for char in key])
+
+    def add(self, key: str,value)-> None:
+        hashed_key = self.hash(key)
+        if self.collection.get(hashed_key):
+            self.collection[hashed_key].update({key: value})
+        else:
+            self.collection[hashed_key] = {key: value}
+    def lookup(self, key: str)-> ...:
+        hashed_key = self.hash(key)
+        if self.collection.get(hashed_key) and self.collection.get(hashed_key).get(key):
+            return self.collection[hashed_key][key]
+        else:
+            return None
+    def remove(self, key: str)-> None:
+        if self.lookup(key):
+            hashed_key = self.hash(key)
+            item = self.collection[hashed_key].pop(key)
+            print(f'[{key}: {item}] was successfully removed')
+        else:
+            print(f'No value found for \'{key}\'')
+
+if __name__ == '__main__':
+    table = HashTable()
+    table.add('key', 'value')
+    table.add('kye', 'valerie')
+    print(table.collection)
+    table.remove('kye')
+    table.remove('squid')
+    table.add('eye', 'green')
+    table.add('yee', 'haw')
+    table.add('golf', 'sport')
+    table.add('dear', 'friend')
+    table.add('read', 'book')
+    print(table.lookup('golf'))
+    table.add('fcc', 'coding')
+    print(table.lookup('cfc'))
+    table.add('cfc', 'chemical')
+    print(f'{"Final Result":*^30}\n{table.collection}')

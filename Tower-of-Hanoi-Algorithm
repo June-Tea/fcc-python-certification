@@ -1,0 +1,34 @@
+#Global peg variables
+A = []
+B = []
+C = []
+#Recursive hanoi stack mover
+def move_stack(height: int,current: [int], spare: [int], goal: [int])-> str:
+    moves = ''
+    #If more than one on the stack, move the others first to alternating pegs
+    if height > 1: 
+        moves += move_stack(height - 1,current, goal, spare)
+    #Move disk if able
+    if(not goal or goal[-1] > current[-1]):
+        goal.append(current.pop())
+        moves += f'\n{A} {B} {C}'
+        #If there are disks in the spare move them 
+        if len(spare) >= 1:
+            moves += move_stack(height - 1,spare,current, goal)
+    return moves
+
+
+def hanoi_solver(num: int)->str:
+    global A, B, C
+    A = [i for i in range(num,0,-1)]
+    B = []
+    C = []
+
+    moves = f'{A} {B} {C}'
+    if num < 1:
+        return moves
+    else:
+        moves += move_stack(num,A,B,C)
+    return moves
+if __name__ == '__main__':
+    print(hanoi_solver(4))
